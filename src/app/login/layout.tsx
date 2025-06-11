@@ -1,5 +1,9 @@
 import "../globals.css";
 
+export const metadata = {
+  title: "Login",
+};
+
 export default function AuthLayout({
   children,
 }: Readonly<{

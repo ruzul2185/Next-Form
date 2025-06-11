@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -8,14 +10,50 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-import { login } from "@/app/login/actions";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export const metadata = {
-  title: "Login",
-};
+import type { LoginData, LoginResult } from "./type";
+
+import { login } from "./actions";
 
 const Login: React.FC = () => {
+  const router = useRouter();
+
+  const [credentials, setCredentials] = useState<LoginData>({
+    email: "",
+    password: "",
+  });
+
+  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCredentials((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const submitHandlerAndEmailValidator = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!credentials.email || !emailRegex.test(credentials.email)) {
+      // You can use toast or alert for feedback
+      toast("Please enter a valid email address.");
+      return;
+    }
+    const result: LoginResult = await login(credentials);
+    if (result.success) {
+      toast.success(result.message);
+      router.push("/dashboard");
+    } else {
+      toast.error(result.message || "Login failed.");
+    }
+  };
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -25,7 +63,10 @@ const Login: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="flex flex-col gap-6">
+        <form
+          className="flex flex-col gap-6"
+          onSubmit={submitHandlerAndEmailValidator}
+        >
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -33,15 +74,24 @@ const Login: React.FC = () => {
               name="email"
               type="email"
               placeholder="m@example.com"
+              value={credentials.email}
+              onChange={inputHandler}
               required
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required name="password" />
+            <Input
+              id="password"
+              type="password"
+              required
+              name="password"
+              value={credentials.password}
+              onChange={inputHandler}
+            />
           </div>
           <div className="grid gap-2">
-            <Button type="submit" className="w-full" formAction={login}>
+            <Button type="submit" className="w-full">
               Login
             </Button>
           </div>
