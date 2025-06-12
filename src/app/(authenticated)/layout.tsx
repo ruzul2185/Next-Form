@@ -1,3 +1,5 @@
+import Header from "@/components/custom/header";
+
 const DashboardLayout = ({
   children,
 }: Readonly<{
@@ -5,7 +7,7 @@ const DashboardLayout = ({
 }>) => {
   return (
     <>
-      <div>header</div>
+      <Header />
       <section>{children}</section>
     </>
   );
