@@ -16,8 +16,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type { LoginData, LoginResult } from "./type";
+import { signIn } from "@/utils/supabase/client";
 
-import { login } from "./actions";
+import LoginSkeleton from "./loading";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -26,6 +27,8 @@ const Login: React.FC = () => {
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,18 +42,32 @@ const Login: React.FC = () => {
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!credentials.email || !emailRegex.test(credentials.email)) {
-      // You can use toast or alert for feedback
       toast("Please enter a valid email address.");
       return;
     }
-    const result: LoginResult = await login(credentials);
-    if (result.success) {
-      toast.success(result.message);
-      router.push("/dashboard");
-    } else {
-      toast.error(result.message || "Login failed.");
+
+    setLoading(true);
+
+    try {
+      const result: LoginResult = await signIn(
+        credentials.email,
+        credentials.password
+      );
+
+      if (result.success) {
+        router.push("/dashboard");
+        toast.success(result.message);
+      } else {
+        toast.error(result.message || "Login failed.");
+      }
+    } catch (err: any) {
+      console.error("Login exception:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,39 +80,45 @@ const Login: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          className="flex flex-col gap-6"
-          onSubmit={submitHandlerAndEmailValidator}
-        >
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="m@example.com"
-              value={credentials.email}
-              onChange={inputHandler}
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              name="password"
-              value={credentials.password}
-              onChange={inputHandler}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </div>
-        </form>
+        {loading ? (
+          // 🔄 Skeleton while logging in
+          <LoginSkeleton />
+        ) : (
+          // ✅ Actual Form
+          <form
+            className="flex flex-col gap-6"
+            onSubmit={submitHandlerAndEmailValidator}
+          >
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                value={credentials.email}
+                onChange={inputHandler}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                name="password"
+                value={credentials.password}
+                onChange={inputHandler}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+            </div>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

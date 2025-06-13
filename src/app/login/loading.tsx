@@ -1,9 +1,21 @@
-export default function LoginLoading() {
+"use client";
+
+import { Skeleton } from "@/components/ui/skeleton";
+
+const LoginSkeleton = () => {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-300">
-      <div className="w-full max-w-sm">
-        <div className="h-16 w-16 mx-auto animate-spin rounded-full border-4 border-gray-300 border-t-blue-500" />
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-full" />
       </div>
+      <div className="grid gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <Skeleton className="h-10 w-full rounded-md" />
     </div>
   );
-}
+};
+
+export default LoginSkeleton;
