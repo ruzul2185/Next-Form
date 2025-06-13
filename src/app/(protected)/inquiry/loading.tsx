@@ -24,6 +24,7 @@ const InquiryListLoading = () => {
                 "Gender",
                 "Reference",
                 "Created At",
+                " ",
               ].map((label, idx) => (
                 <TableHead
                   key={idx}
@@ -37,7 +38,7 @@ const InquiryListLoading = () => {
           <TableBody>
             {Array.from({ length: 10 }).map((_, rowIdx) => (
               <TableRow key={rowIdx} className="border-t animate-pulse">
-                {Array.from({ length: 7 }).map((_, colIdx) => (
+                {Array.from({ length: 8 }).map((_, colIdx) => (
                   <TableCell key={colIdx} className="px-4 py-4 text-center">
                     <div className="h-4 w-3/4 mx-auto bg-gray-200 rounded" />
                   </TableCell>

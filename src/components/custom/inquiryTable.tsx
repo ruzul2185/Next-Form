@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { useEffect, useState } from "react";
 
 import type {
@@ -18,6 +19,7 @@ import type {
 
 import InquiryListLoading from "@/app/(protected)/inquiry/loading";
 import InquiryPagination from "./inquiryPagination";
+import RowActionMenu from "./rowActionMenu";
 
 import { useSearchParams } from "next/navigation";
 
@@ -57,7 +59,7 @@ const InquiryTable = () => {
   if (loading) return <InquiryListLoading />;
 
   return (
-    <div className="w-full overflow-x-auto px-4 py-6">
+    <div className="w-full overflow-x-auto px-4 py-6 ">
       <div className="inline-block min-w-full rounded-2xl shadow-md border border-gray-200 bg-white overflow-hidden">
         <Table className="min-w-full text-sm text-gray-700">
           <TableHeader>
@@ -82,6 +84,9 @@ const InquiryTable = () => {
               </TableHead>
               <TableHead className="px-4 py-3 text-center font-semibold">
                 Created At
+              </TableHead>
+              <TableHead className="px-4 py-3 text-center font-semibold">
+                {" "}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -112,6 +117,9 @@ const InquiryTable = () => {
                   </TableCell>
                   <TableCell className="px-4 py-4 text-center">
                     {new Date(inquiry.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="py-4 text-center">
+                    <RowActionMenu />
                   </TableCell>
                 </TableRow>
               ))
