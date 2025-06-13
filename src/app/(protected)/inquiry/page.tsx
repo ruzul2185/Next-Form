@@ -1,6 +1,6 @@
-// export const metadata = {
-//   title: "Inquiry",
-// };
+export const metadata = {
+  title: "Inquiry",
+};
 
 import InquiryTable from "@/components/custom/inquiryTable";
 
