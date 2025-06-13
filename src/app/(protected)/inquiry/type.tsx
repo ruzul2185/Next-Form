@@ -1,11 +1,11 @@
 export interface InquiryTableData {
-  created_at: String;
-  date_of_birth: String;
-  full_name: String;
-  gender: String;
-  id: Number;
-  phone_number: Number;
-  reference: String;
+  created_at: string;
+  date_of_birth: string;
+  full_name: string;
+  gender: string;
+  id: number;
+  phone_number: number;
+  reference: string;
 }
 
 export interface InquiryTableResponse {
@@ -15,8 +15,8 @@ export interface InquiryTableResponse {
 }
 
 export interface InquiryTablePagination {
-  limit: Number;
-  page: Number;
-  total: Number;
-  totalPages: Number;
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
 }

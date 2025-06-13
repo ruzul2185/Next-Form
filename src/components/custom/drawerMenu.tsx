@@ -28,7 +28,7 @@ const DrawerMenu = () => {
             Dashboard
           </Link>
           <Link
-            href="/inquiry"
+            href="/inquiry?page=1&limit=10"
             className="ext-base font-bold hover:bg-gray-300 p-3 rounded-2xl"
           >
             Inquiry

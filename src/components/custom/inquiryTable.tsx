@@ -19,44 +19,46 @@ import type {
 import InquiryListLoading from "@/app/(protected)/inquiry/loading";
 import InquiryPagination from "./inquiryPagination";
 
+import { useSearchParams } from "next/navigation";
+
 const InquiryTable = () => {
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get("page") || "1");
+
   const [inquiries, setInquiries] = useState<InquiryTableData[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [pagination, setPagination] = useState<InquiryTablePagination>({
     limit: 10,
-    page: 1,
+    page: currentPage,
     totalPages: 0,
     total: 0,
   });
 
-  const getAllInquiries = async () => {
+  const getAllInquiries = async (page: number) => {
+    setLoading(true);
     try {
-      const result = await fetch(
-        `/api/inquiry?page=${pagination.page}&limit=${pagination.limit}`
+      const res = await fetch(
+        `/api/inquiry?page=${page}&limit=${pagination.limit}`
       );
-      const parsedResult: InquiryTableResponse = await result.json();
-      console.log(parsedResult);
+      const parsedResult: InquiryTableResponse = await res.json();
       setInquiries(parsedResult.data);
       setPagination(parsedResult.pagination);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch inquiries:", error);
     } finally {
-      setLoading(false); // <-- Stop loading after fetch attempt
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getAllInquiries();
-  }, []);
+    getAllInquiries(currentPage);
+  }, [currentPage]);
 
-  // Show loading skeleton while loading
-  if (loading) {
-    return <InquiryListLoading />;
-  }
+  if (loading) return <InquiryListLoading />;
 
   return (
     <div className="w-full overflow-x-auto px-4 py-6">
-      <div className="inline-block min-w-full rounded-2xl shadow-md border border-gray-200 bg-white">
+      <div className="inline-block min-w-full rounded-2xl shadow-md border border-gray-200 bg-white overflow-hidden">
         <Table className="min-w-full text-sm text-gray-700">
           <TableHeader>
             <TableRow className="bg-gray-100 text-gray-800">
@@ -87,17 +89,17 @@ const InquiryTable = () => {
             {inquiries.length > 0 ? (
               inquiries.map((inquiry) => (
                 <TableRow
-                  key={inquiry.id.toString()}
+                  key={inquiry.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
                   <TableCell className="px-4 py-4 text-center">
-                    {inquiry.id.toString()}
+                    {inquiry.id}
                   </TableCell>
                   <TableCell className="px-4 py-4 text-center">
                     {inquiry.full_name}
                   </TableCell>
                   <TableCell className="px-4 py-4 text-center">
-                    {inquiry.phone_number.toString()}
+                    {inquiry.phone_number}
                   </TableCell>
                   <TableCell className="px-4 py-4 text-center">
                     {inquiry.date_of_birth}
@@ -109,9 +111,7 @@ const InquiryTable = () => {
                     {inquiry.reference}
                   </TableCell>
                   <TableCell className="px-4 py-4 text-center">
-                    {new Date(
-                      inquiry.created_at.toString()
-                    ).toLocaleDateString()}
+                    {new Date(inquiry.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))
