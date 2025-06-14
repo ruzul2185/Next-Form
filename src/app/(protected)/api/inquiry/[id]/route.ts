@@ -1,17 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Reusable context type for dynamic route parameters
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
-export async function GET(req: NextRequest, context: RouteContext) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const supabase = await createClient();
-    const { id } = context.params;
+    const { id } = await params;
 
     const { data, error } = await supabase
       .from("inquiries")
@@ -43,10 +39,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
   }
 }
 
-export async function PATCH(req: NextRequest, context: RouteContext) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const supabase = await createClient();
-    const { id } = context.params;
+    const { id } = await params;
     const updatedFields: Record<string, unknown> = await req.json();
 
     const { data, error } = await supabase
@@ -79,10 +78,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   }
 }
 
-export async function DELETE(req: NextRequest, context: RouteContext) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const supabase = await createClient();
-    const { id } = context.params;
+    const { id } = await params;
 
     const { error } = await supabase.from("inquiries").delete().eq("id", id);
 
