@@ -50,22 +50,27 @@ export async function GET(request: Request) {
   );
 }
 
-function cleanFormData(form: Record<string, any>) {
-  const cleaned: Record<string, any> = {};
+function cleanFormData(form: Record<string, unknown>): Record<string, unknown> {
+  const cleaned: Record<string, unknown> = {};
 
-  for (const key in form) {
-    const value = form[key];
+  const bigintKeys = new Set(["passing_year"]);
 
-    // Convert empty strings to null
+  for (const [key, value] of Object.entries(form)) {
     if (value === "") {
       cleaned[key] = null;
-    }
-    // Convert to numbers if key is bigint and value is not null
-    else if (["passing_year", "cgpa"].includes(key)) {
-      cleaned[key] = isNaN(Number(value)) ? null : Number(value);
-    }
-    // Leave the rest as-is
-    else {
+    } else if (bigintKeys.has(key)) {
+      try {
+        cleaned[key] =
+          value != null && value !== ""
+            ? BigInt(value as string | number)
+            : null;
+      } catch {
+        cleaned[key] = null;
+      }
+    } else if (key === "cgpa") {
+      const num = Number(value);
+      cleaned[key] = isNaN(num) ? null : num;
+    } else {
       cleaned[key] = value;
     }
   }

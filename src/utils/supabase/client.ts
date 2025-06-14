@@ -23,7 +23,7 @@ export async function signIn(email: string, password: string) {
     }
 
     return { success: true, message: "Login successful" };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Sign-in error:", err);
     return {
       success: false,
@@ -42,7 +42,7 @@ export async function logout() {
     }
 
     return { success: true, message: "Logged out successfully" };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Logout error:", err);
     return { success: false, message: "Something went wrong during logout." };
   }

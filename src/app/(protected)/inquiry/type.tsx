@@ -11,7 +11,7 @@ export interface InquiryTableData {
 export interface InquiryTableResponse {
   data: InquiryTableData[];
   pagination: InquiryTablePagination;
-  success: Boolean;
+  success: boolean;
 }
 
 export interface InquiryTablePagination {

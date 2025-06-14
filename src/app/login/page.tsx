@@ -63,7 +63,7 @@ const Login: React.FC = () => {
       } else {
         toast.error(result.message || "Login failed.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login exception:", err);
       toast.error("Something went wrong. Please try again.");
     } finally {
