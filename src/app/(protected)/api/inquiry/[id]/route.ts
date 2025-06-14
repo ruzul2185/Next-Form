@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const supabase = await createClient();
     const { id } = context.params;
-    const updatedFields: Record<string, any> = await req.json();
+    const updatedFields: Record<string, unknown> = await req.json();
 
     const { data, error } = await supabase
       .from("inquiries")
