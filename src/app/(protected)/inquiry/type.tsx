@@ -20,3 +20,43 @@ export interface InquiryTablePagination {
   total: number;
   totalPages: number;
 }
+
+export interface RowActionMenuProps {
+  id: number;
+}
+
+export interface ViewInquiryDialogProps {
+  id: number;
+  openDialog: boolean;
+  setOpenDialog: (open: boolean) => void;
+}
+
+export interface SingleInquiryResponse {
+  success: boolean;
+  data: SinqleInquiryData;
+}
+
+export interface SinqleInquiryData {
+  career_transition_reason: string;
+  cgpa: number;
+  course_duration: string;
+  course_selection: string;
+  created_at: string;
+  current_address: string;
+  date_of_birth: string;
+  email: string;
+  expected_package: string;
+  full_name: string;
+  future_goal: string;
+  gender: string;
+  id: number;
+  job_assistance: string;
+  job_guarentee: string;
+  job_location: string;
+  passing_year: number;
+  permanent_address: string;
+  phone_number: number;
+  recent_education: string;
+  reference: string;
+  user_availability: string;
+}

@@ -119,7 +119,7 @@ const InquiryTable = () => {
                     {new Date(inquiry.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="py-4 text-center">
-                    <RowActionMenu />
+                    <RowActionMenu id={inquiry.id} />
                   </TableCell>
                 </TableRow>
               ))
