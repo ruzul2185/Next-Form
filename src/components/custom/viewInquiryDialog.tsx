@@ -64,17 +64,28 @@ const ViewInquiryDialog = ({
     }
   }, [openDialog]);
 
-  const editableField = (label: string, key: keyof SinqleInquiryData) => (
-    <InputSkeleton
-      label={label}
-      value={inquiry?.[key]}
-      loading={loading}
-      onEdit={() => {
-        setEditingField({ label, key });
-        setEditDialogOpen(true);
-      }}
-    />
-  );
+  const editableField = (label: string, key: keyof SinqleInquiryData) => {
+    const value = inquiry?.[key];
+
+    return (
+      <InputSkeleton
+        key={key}
+        label={label}
+        value={
+          loading
+            ? undefined
+            : value === null || value === undefined
+            ? "Not Provided"
+            : value
+        }
+        loading={loading}
+        onEdit={() => {
+          setEditingField({ label, key });
+          setEditDialogOpen(true);
+        }}
+      />
+    );
+  };
 
   return (
     <>
@@ -108,10 +119,15 @@ const ViewInquiryDialog = ({
             {editableField("Future Goal", "future_goal")}
             {editableField("User Availability", "user_availability")}
             {editableField("Reference", "reference")}
+
             <InputSkeleton
               label="Created At"
               value={
-                inquiry ? new Date(inquiry.created_at).toLocaleString() : ""
+                loading
+                  ? undefined
+                  : inquiry?.created_at
+                  ? new Date(inquiry.created_at).toLocaleString()
+                  : "Not Provided"
               }
               loading={loading}
             />
@@ -124,7 +140,7 @@ const ViewInquiryDialog = ({
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}
           label={editingField.label}
-          value={inquiry?.[editingField.key]}
+          value={inquiry?.[editingField.key] ?? ""}
           onSave={(val) => handleFieldUpdate(editingField.key, val)}
         />
       )}
