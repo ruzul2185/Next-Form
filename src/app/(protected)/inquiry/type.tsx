@@ -23,9 +23,23 @@ export interface InquiryTablePagination {
 
 export interface RowActionMenuProps {
   id: number;
+  refresh: () => void;
 }
 
 export interface ViewInquiryDialogProps {
+  id: number;
+  openDialog: boolean;
+  setOpenDialog: (open: boolean) => void;
+}
+
+export interface DeleteInquiryDialogProps {
+  id: number;
+  openDialog: boolean;
+  setOpenDialog: (open: boolean) => void;
+  refresh: () => void;
+}
+
+export interface UpdateInquiryDialogProps {
   id: number;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;

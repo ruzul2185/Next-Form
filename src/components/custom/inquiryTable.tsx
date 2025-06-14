@@ -56,6 +56,10 @@ const InquiryTable = () => {
     getAllInquiries(currentPage);
   }, [currentPage]);
 
+  const refreshDataAfterChange = async () => {
+    getAllInquiries(currentPage);
+  };
+
   if (loading) return <InquiryListLoading />;
 
   return (
@@ -119,7 +123,10 @@ const InquiryTable = () => {
                     {new Date(inquiry.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="py-4 text-center">
-                    <RowActionMenu id={inquiry.id} />
+                    <RowActionMenu
+                      id={inquiry.id}
+                      refresh={refreshDataAfterChange}
+                    />
                   </TableCell>
                 </TableRow>
               ))

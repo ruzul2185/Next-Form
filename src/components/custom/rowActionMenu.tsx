@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import type { RowActionMenuProps } from "@/app/(protected)/inquiry/type";
 import ViewInquiryDialog from "./viewInquiryDialog";
+import DeleteDialog from "./deleteDialog";
 
-const RowActionMenu = ({ id }: RowActionMenuProps) => {
-  const [openDialog, setOpenDialog] = useState(false);
+const RowActionMenu = ({ id, refresh }: RowActionMenuProps) => {
+  const [openViewDialog, setOpenViewDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   return (
     <>
@@ -27,19 +29,26 @@ const RowActionMenu = ({ id }: RowActionMenuProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">
           <DropdownMenuGroup>
-            <DropdownMenuItem onSelect={() => setOpenDialog(true)}>
+            <DropdownMenuItem onSelect={() => setOpenViewDialog(true)}>
               View
             </DropdownMenuItem>
-            <DropdownMenuItem>Update</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setOpenDeleteDialog(true)}>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <ViewInquiryDialog
         id={id}
-        openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
+        openDialog={openViewDialog}
+        setOpenDialog={setOpenViewDialog}
+      />
+      <DeleteDialog
+        id={id}
+        openDialog={openDeleteDialog}
+        setOpenDialog={setOpenDeleteDialog}
+        refresh={refresh}
       />
     </>
   );

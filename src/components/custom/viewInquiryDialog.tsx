@@ -3,11 +3,9 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import type {
   ViewInquiryDialogProps,
@@ -15,6 +13,8 @@ import type {
   SinqleInquiryData,
 } from "@/app/(protected)/inquiry/type";
 import { useEffect, useState } from "react";
+import InputSkeleton from "./inputSkeleton";
+import EditFieldDialog from "./editFieldDialog";
 
 const ViewInquiryDialog = ({
   id,
@@ -23,6 +23,11 @@ const ViewInquiryDialog = ({
 }: ViewInquiryDialogProps) => {
   const [inquiry, setInquiry] = useState<SinqleInquiryData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingField, setEditingField] = useState<{
+    label: string;
+    key: keyof SinqleInquiryData;
+  } | null>(null);
 
   const getSingleInquiry = async () => {
     setLoading(true);
@@ -37,141 +42,93 @@ const ViewInquiryDialog = ({
     }
   };
 
+  const handleFieldUpdate = async (
+    key: keyof SinqleInquiryData,
+    value: string
+  ) => {
+    try {
+      await fetch(`/api/inquiry/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [key]: value }),
+      });
+      await getSingleInquiry(); // Refresh data
+    } catch (error) {
+      console.error("Failed to update field", error);
+    }
+  };
+
   useEffect(() => {
     if (openDialog) {
       getSingleInquiry();
     }
   }, [openDialog]);
 
-  return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Inquiry Details</DialogTitle>
-        </DialogHeader>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm">
-          <Detail
-            label="Full Name"
-            value={inquiry?.full_name}
-            loading={loading}
-          />
-          <Detail label="Email" value={inquiry?.email} loading={loading} />
-          <Detail
-            label="Phone Number"
-            value={inquiry?.phone_number}
-            loading={loading}
-          />
-          <Detail
-            label="Date of Birth"
-            value={inquiry?.date_of_birth}
-            loading={loading}
-          />
-          <Detail label="Gender" value={inquiry?.gender} loading={loading} />
-          <Detail
-            label="Current Address"
-            value={inquiry?.current_address}
-            loading={loading}
-          />
-          <Detail
-            label="Permanent Address"
-            value={inquiry?.permanent_address}
-            loading={loading}
-          />
-          <Detail
-            label="Recent Education"
-            value={inquiry?.recent_education}
-            loading={loading}
-          />
-          <Detail label="CGPA" value={inquiry?.cgpa} loading={loading} />
-          <Detail
-            label="Passing Year"
-            value={inquiry?.passing_year}
-            loading={loading}
-          />
-          <Detail
-            label="Course Selected"
-            value={inquiry?.course_selection}
-            loading={loading}
-          />
-          <Detail
-            label="Course Duration"
-            value={inquiry?.course_duration}
-            loading={loading}
-          />
-          <Detail
-            label="Expected Package"
-            value={inquiry?.expected_package}
-            loading={loading}
-          />
-          <Detail
-            label="Job Assistance"
-            value={inquiry?.job_assistance}
-            loading={loading}
-          />
-          <Detail
-            label="Job Guarantee"
-            value={inquiry?.job_guarentee}
-            loading={loading}
-          />
-          <Detail
-            label="Preferred Job Location"
-            value={inquiry?.job_location}
-            loading={loading}
-          />
-          <Detail
-            label="Career Transition Reason"
-            value={inquiry?.career_transition_reason}
-            loading={loading}
-          />
-          <Detail
-            label="Future Goal"
-            value={inquiry?.future_goal}
-            loading={loading}
-          />
-          <Detail
-            label="User Availability"
-            value={inquiry?.user_availability}
-            loading={loading}
-          />
-          <Detail
-            label="Reference"
-            value={inquiry?.reference}
-            loading={loading}
-          />
-          <Detail
-            label="Created At"
-            value={inquiry ? new Date(inquiry.created_at).toLocaleString() : ""}
-            loading={loading}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
+  const editableField = (label: string, key: keyof SinqleInquiryData) => (
+    <InputSkeleton
+      label={label}
+      value={inquiry?.[key]}
+      loading={loading}
+      onEdit={() => {
+        setEditingField({ label, key });
+        setEditDialogOpen(true);
+      }}
+    />
   );
-};
-
-const Detail = ({
-  label,
-  value,
-  loading,
-}: {
-  label: string;
-  value: string | number | null | undefined;
-  loading?: boolean;
-}) => {
-  const showSkeleton = loading || value === undefined || value === null;
 
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      {showSkeleton ? (
-        <Skeleton className="h-5 w-3/4 rounded" />
-      ) : (
-        <span className="text-base">
-          {value === "" ? "-" : value.toString()}
-        </span>
+    <>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Inquiry Details</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm">
+            {editableField("Full Name", "full_name")}
+            {editableField("Email", "email")}
+            {editableField("Phone Number", "phone_number")}
+            {editableField("Date of Birth", "date_of_birth")}
+            {editableField("Gender", "gender")}
+            {editableField("Current Address", "current_address")}
+            {editableField("Permanent Address", "permanent_address")}
+            {editableField("Recent Education", "recent_education")}
+            {editableField("CGPA", "cgpa")}
+            {editableField("Passing Year", "passing_year")}
+            {editableField("Course Selected", "course_selection")}
+            {editableField("Course Duration", "course_duration")}
+            {editableField("Expected Package", "expected_package")}
+            {editableField("Job Assistance", "job_assistance")}
+            {editableField("Job Guarantee", "job_guarentee")}
+            {editableField("Preferred Job Location", "job_location")}
+            {editableField(
+              "Career Transition Reason",
+              "career_transition_reason"
+            )}
+            {editableField("Future Goal", "future_goal")}
+            {editableField("User Availability", "user_availability")}
+            {editableField("Reference", "reference")}
+            <InputSkeleton
+              label="Created At"
+              value={
+                inquiry ? new Date(inquiry.created_at).toLocaleString() : ""
+              }
+              loading={loading}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {editingField && (
+        <EditFieldDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          label={editingField.label}
+          value={inquiry?.[editingField.key]}
+          onSave={(val) => handleFieldUpdate(editingField.key, val)}
+        />
       )}
-    </div>
+    </>
   );
 };
 
