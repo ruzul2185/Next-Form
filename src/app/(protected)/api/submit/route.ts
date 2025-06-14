@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("invoked on submit!");
     const supabase = await createClient();
     const body = await req.json();
 
