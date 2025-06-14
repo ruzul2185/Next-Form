@@ -49,3 +49,89 @@ export async function GET(request: Request) {
     { status: 200 }
   );
 }
+
+function cleanFormData(form: Record<string, any>) {
+  const cleaned: Record<string, any> = {};
+
+  for (const key in form) {
+    const value = form[key];
+
+    // Convert empty strings to null
+    if (value === "") {
+      cleaned[key] = null;
+    }
+    // Convert to numbers if key is bigint and value is not null
+    else if (["passing_year", "cgpa"].includes(key)) {
+      cleaned[key] = isNaN(Number(value)) ? null : Number(value);
+    }
+    // Leave the rest as-is
+    else {
+      cleaned[key] = value;
+    }
+  }
+
+  return cleaned;
+}
+
+export async function POST(req: Request) {
+  const supabase = await createClient();
+
+  // Get authenticated user
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const rawBody = await req.json();
+    const body = cleanFormData(rawBody);
+
+    // Validate required fields
+    const requiredFields = [
+      "full_name",
+      "phone_number",
+      "date_of_birth",
+      "gender",
+      "reference",
+    ];
+    const missingFields = requiredFields.filter((field) => !body[field]);
+
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Missing required fields: ${missingFields.join(", ")}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("inquiries")
+      .insert([body])
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data }, { status: 201 });
+  } catch (error) {
+    console.error("Error inserting inquiry:", error);
+    return NextResponse.json(
+      { success: false, error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+}

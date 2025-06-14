@@ -62,7 +62,7 @@ export async function PATCH(
         { status: 400 }
       );
     }
-    console.log(data);
+
     if (!data || data.length === 0) {
       return NextResponse.json(
         { success: false, error: "Inquiry not found" },
