@@ -1,15 +1,18 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// Reusable context type for dynamic route parameters
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const supabase = await createClient();
-    const { id } = await params;
+    const { id } = context.params;
 
-    // Fetch single inquiry by ID
     const { data, error } = await supabase
       .from("inquiries")
       .select("*")
@@ -40,15 +43,11 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const supabase = await createClient();
-    const { id } = await params;
-
-    const updatedFields = await req.json();
+    const { id } = context.params;
+    const updatedFields: Record<string, any> = await req.json();
 
     const { data, error } = await supabase
       .from("inquiries")
@@ -80,14 +79,10 @@ export async function PATCH(
   }
 }
 
-// Add DELETE method to handle inquiry deletion
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const supabase = await createClient();
-    const { id } = await params;
+    const { id } = context.params;
 
     const { error } = await supabase.from("inquiries").delete().eq("id", id);
 
