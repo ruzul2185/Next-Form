@@ -42,6 +42,7 @@ export async function updateSession(request: NextRequest) {
   if (
     !user &&
     !request.nextUrl.pathname.includes("/login") &&
+    !request.nextUrl.pathname.includes("/(protected)/api/appScript") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {
     // no user, potentially respond by redirecting the user to the login page
